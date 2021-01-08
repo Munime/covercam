@@ -1,9 +1,11 @@
 import "./menuItem.styles.scss";
 import { withRouter } from "react-router-dom";
 
+// деструктуризую всі необхідні мені дані
 const MenuItem = ({ title, imageUrl, size, history, match, linkUrl }) => {
   return (
     <div
+      //based on property "size" (I have it in data) I can play with styling
       className={`${size} menu-item`}
       onClick={() => history.push(`${match.url}${linkUrl}`)}
     >
