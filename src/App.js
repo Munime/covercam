@@ -5,7 +5,7 @@ import HomePage from "./pages/homepage/homepage";
 import ShopPage from "./pages/shop-page/shoppage";
 import Header from "./components/header/header";
 import SignInAndOut from "./pages/signinpage/signInAndOutPage";
-import { auth } from "./firebase/firebase.utils";
+import { auth, createUserProfileDocument } from "./firebase/firebase.utils";
 class App extends React.Component {
   constructor() {
     super();
@@ -18,11 +18,25 @@ class App extends React.Component {
   unsubscribeFromAuth = null;
 
   componentDidMount() {
-    this.unsubscribeFromAuth = auth.onAuthStateChanged((user) => {
-      // якщо юзер автентифікувався з Firebase
-      this.setState({ currentUser: user }); // ми поміщаємо юзера в наш стейт програми
-
-      console.log(user);
+    this.unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
+      if (userAuth) {
+        const userRef = await createUserProfileDocument(userAuth); // приймаєм обєкт повернутий із функції
+        // розміщаємо дані юзера в стейті програми
+        userRef.onSnapshot((snapShot) => {
+          this.setState(
+            {
+              currentUser: {
+                id: snapShot.id, // айдішка знаходиться завжди в снепшоті
+                ...snapShot.data(), // всі інші дані можна побачити, викликавши метод data()
+              },
+            },
+            () => {
+              console.log(this.state);
+            }
+          );
+        });
+      }
+      this.setState({ currentUser: userAuth });
     });
   }
 
