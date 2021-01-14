@@ -14,6 +14,11 @@ export const selectCartItems = createSelector(
   (cart) => cart.cartItems
 );
 
+export const selectCartHidden = createSelector(
+  [selectCart],
+  (cart) => cart.hidden
+);
+
 // селектимо частину стейту, i робим мемоізовану функцію, яка виводить загальну пораховану кількість айтемів в корзині
 export const selectCartItemsCount = createSelector(
   [selectCartItems],
@@ -23,4 +28,12 @@ export const selectCartItemsCount = createSelector(
         accumulatedQuantity + cartItem.quantity,
       0
     )
+);
+
+export const selectCartTotal = createSelector([selectCartItems], (cartItems) =>
+  cartItems.reduce(
+    (accumulatedQuantity, cartItem) =>
+      accumulatedQuantity + cartItem.quantity * cartItem.price,
+    0
+  )
 );
