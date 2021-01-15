@@ -1,5 +1,5 @@
 import CartActionTypes from "./cart.types";
-import { addItemToCart } from "./cartUtils";
+import { addItemToCart, removeItemFromCart } from "./cartUtils";
 const INITIAL_STATE = {
   hidden: true,
   cartItems: [],
@@ -16,6 +16,21 @@ const cartReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         cartItems: addItemToCart(state.cartItems, action.payload), // функція бере в себе state з масивом айтемів, і payload, з айтемом, який плануємо додати
+      };
+    case CartActionTypes.REMOVE_ITEM:
+      return {
+        ...state,
+        cartItems: removeItemFromCart(state.cartItems, action.payload),
+      };
+    case CartActionTypes.CLEAR_ITEM:
+      return {
+        ...state,
+        // тут редюсер бере зі стейту весь масив айтемів
+        // проганяє його через filter() функцію, яка повертає новий масив з айтемів,
+        // айдішки, яких не співпадають з айдішками айтемі з пейлода
+        cartItems: state.cartItems.filter(
+          (cartItem) => cartItem.id !== action.payload.id
+        ),
       };
     default:
       return state;
