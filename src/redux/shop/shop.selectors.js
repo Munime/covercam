@@ -15,6 +15,7 @@ export const selectCollection = memoize((collectionUrlParam) =>
   )
 );
 
+// Object.key() перетворює обєкти з ключами в масив ключів
 export const selectCollectionForPreview = createSelector(
   [selectShopCollections],
   (collections) => Object.keys(collections).map((key) => collections[key])
