@@ -13,10 +13,19 @@ export const selectCollection = memoize((collectionUrlParam) =>
     collections ? collections[collectionUrlParam] : null
   )
 );
-
 // Object.key() перетворює обєкти з ключами в масив ключів
 export const selectCollectionForPreview = createSelector(
   [selectShopCollections],
   (collections) =>
     collections ? Object.keys(collections).map((key) => collections[key]) : []
+);
+
+export const selectIsCollectionsFetching = createSelector(
+  [selectShopData],
+  (shopdata) => shopdata.isFetching
+);
+
+export const selectIsCollectionsLoaded = createSelector(
+  [selectShopData],
+  (shopdata) => !!shopdata.collections
 );
