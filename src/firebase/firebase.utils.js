@@ -39,6 +39,42 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
   return userRef; // вертаємо дані юзера, щоб мати можливість використати їх десь у коді, програмі
 };
 
+export const addCollectionsAndDocuments = async (
+  collectionKey,
+  objectsToAdd
+) => {
+  const collectionRef = firestore.collection(collectionKey);
+
+  const batch = firestore.batch();
+  objectsToAdd.forEach((obj) => {
+    const newDocRef = collectionRef.doc();
+    batch.set(newDocRef, obj);
+  });
+  return await batch.commit();
+};
+
+// функція яка конвертує масив, який ми отримуємо з фаєрбейза в Обєкт
+//
+export const convertCollectionsSnapshotToMap = (collections) => {
+  const transformedCollections = collections.docs.map((doc) => {
+    const { title, items } = doc.data();
+
+    return {
+      routeName: encodeURI(title.toLowerCase()),
+      id: doc.id,
+      title,
+      items,
+    };
+  });
+
+  // ця функція присвоює ключі нашим обєктам і вертає нові обєкти з ключами
+  // імя ключа береться із title (все тільки з маленької букви)
+  return transformedCollections.reduce((accumulator, collection) => {
+    accumulator[collection.title.toLowerCase()] = collection;
+    return accumulator;
+  }, {});
+};
+
 firebase.initializeApp(config);
 
 export const auth = firebase.auth();
