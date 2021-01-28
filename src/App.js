@@ -5,8 +5,7 @@ import HomePage from "./pages/homepage/homepage";
 import ShopPage from "./pages/shop-page/shoppage";
 import Header from "./components/header/header";
 import SignInAndOut from "./pages/signinpage/signInAndOutPage";
-import { auth, createUserProfileDocument } from "./firebase/firebase.utils";
-import { setCurrentUser } from "./redux/user/user.actions";
+import { checkUserSession } from "./redux/user/user.actions";
 import { createStructuredSelector } from "reselect";
 import { selectCurrentUser } from "./redux/user/user.selectors";
 
@@ -16,21 +15,8 @@ class App extends React.Component {
   unsubscribeFromAuth = null;
 
   componentDidMount() {
-    const { setCurrentUser } = this.props;
-
-    this.unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
-      if (userAuth) {
-        const userRef = await createUserProfileDocument(userAuth); // приймаєм обєкт повернутий із функції
-        // розміщаємо дані юзера в стейті програми
-        userRef.onSnapshot((snapShot) => {
-          setCurrentUser({
-            id: snapShot.id, // айдішка знаходиться завжди в снепшоті
-            ...snapShot.data(), // всі інші дані можна побачити, викликавши метод data()
-          });
-        });
-      }
-      setCurrentUser(userAuth);
-    });
+    const { checkUserSession } = this.props;
+    checkUserSession();
   }
 
   componentWillUnmount() {
@@ -63,7 +49,7 @@ const mapStateToProps = createStructuredSelector({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  setCurrentUser: (user) => dispatch(setCurrentUser(user)),
+  checkUserSession: () => dispatch(checkUserSession()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

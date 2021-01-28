@@ -1,8 +1,13 @@
 import React from "react";
+import { connect } from "react-redux";
+import {
+  googleSignInStart,
+  emailSignInStart,
+} from "../../redux/user/user.actions";
 import CustomButton from "../custom-button/customButton";
 import FormInput from "../form-input/formInput";
 import "./signIn.styles.scss";
-import { auth, signInWithGoogle } from "../../firebase/firebase.utils";
+
 class SignIn extends React.Component {
   constructor(props) {
     super(props);
@@ -17,12 +22,9 @@ class SignIn extends React.Component {
     e.preventDefault();
 
     const { email, password } = this.state;
-    try {
-      await auth.signInWithEmailAndPassword(email, password);
-      this.setState({ email: "", password: "" });
-    } catch (error) {
-      console.log(error);
-    }
+    const { emailSignInStart } = this.props;
+
+    emailSignInStart(email, password);
   };
 
   // цз функція приймає подію. Далі ми привязуємо ціль події до двох змінних. Де імя це наш ключ в стейті, а value - це те що ми ввели у формі
@@ -33,6 +35,7 @@ class SignIn extends React.Component {
   };
 
   render() {
+    const { googleSignInStart } = this.props;
     return (
       <div className="sign-in">
         <h2 className="title">I already have an account</h2>
@@ -54,7 +57,11 @@ class SignIn extends React.Component {
           />
           <div className="buttons">
             <CustomButton type="submit">Sign In</CustomButton>
-            <CustomButton onClick={signInWithGoogle} isGoogleSignIn>
+            <CustomButton
+              type="button"
+              onClick={googleSignInStart}
+              isGoogleSignIn
+            >
               Sign In With Google
             </CustomButton>
           </div>
@@ -64,4 +71,10 @@ class SignIn extends React.Component {
   }
 }
 
-export default SignIn;
+const mapDispatchToProps = (dispatch) => ({
+  googleSignInStart: () => dispatch(googleSignInStart()),
+  emailSignInStart: (email, password) =>
+    dispatch(emailSignInStart({ email, password })), // ми передаємо в цю функцію дані емейла і пароля і вони стають ключами обєкта
+});
+
+export default connect(null, mapDispatchToProps)(SignIn);
