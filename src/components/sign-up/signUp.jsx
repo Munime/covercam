@@ -1,7 +1,8 @@
 import React from "react";
-import { auth, createUserProfileDocument } from "../../firebase/firebase.utils";
+import { connect } from "react-redux";
 import CustomButton from "../custom-button/customButton";
 import FormInput from "../form-input/formInput";
+import { signUpStart } from "../../redux/user/user.actions";
 
 class SignUp extends React.Component {
   constructor() {
@@ -18,6 +19,7 @@ class SignUp extends React.Component {
   handleSubmit = async (event) => {
     event.preventDefault();
 
+    const { signUpStart } = this.props;
     const { displayName, email, password, confirmPassword } = this.state; // берем дані зі стейта для маніпуляцій я ними
     // провіряємо чи співпадають паролі
     if (password !== confirmPassword) {
@@ -25,25 +27,33 @@ class SignUp extends React.Component {
       return;
     }
 
-    // створюємо обєкт нового кистувача з фаєрбейзівським методом і передаєм туди емейл і пароль
-    try {
-      const { user } = await auth.createUserWithEmailAndPassword(
-        email,
-        password
-      );
-      // створюєм документ в firestore з допомогою нашої функції
-      await createUserProfileDocument(user, { displayName });
-      // очищаємо нашу форму від введених даних
-      this.setState({
-        displayName: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-      });
-    } catch (error) {
-      console.error(error);
-    }
+    signUpStart({ email, password, displayName });
+    this.setState({
+      displayName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    });
   };
+  //   // створюємо обєкт нового кистувача з фаєрбейзівським методом і передаєм туди емейл і пароль
+  //   try {
+  //     const { user } = await auth.createUserWithEmailAndPassword(
+  //       email,
+  //       password
+  //     );
+  //     // створюєм документ в firestore з допомогою нашої функції
+  //     await createUserProfileDocument(user, { displayName });
+  //     // очищаємо нашу форму від введених даних
+  //     this.setState({
+  //       displayName: "",
+  //       email: "",
+  //       password: "",
+  //       confirmPassword: "",
+  //     });
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   // фіксуємо наші дані введені у поля форми
   handleChange = (event) => {
@@ -53,6 +63,7 @@ class SignUp extends React.Component {
 
   render() {
     const { displayName, email, password, confirmPassword } = this.state; // деструктуризуємо(витягуємо  дані) зі стейта, які поміщаємо в розмітку, щоб відображати
+
     return (
       <div className="sign-up">
         <h2 className="title">NO ACCOUNT?</h2>
@@ -97,4 +108,8 @@ class SignUp extends React.Component {
   }
 }
 
-export default SignUp;
+const mapDispatchToProps = (dispatch) => ({
+  signUpStart: (userCredentials) => dispatch(signUpStart(userCredentials)),
+});
+
+export default connect(null, mapDispatchToProps)(SignUp);
