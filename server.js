@@ -9,7 +9,7 @@ if (process.env.NODE_ENV !== "production") require("dotenv").config();
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY); // бібліотека страйпа бере наш сікрет ключ і надає нам доступ до своїх методів
 
 const app = express(); // Запускаємо нову програму з Експресом
-const port = 5000; // Знаходитися сервер буде за адресою, яка вказана у значенні PORT, або локалхост:5000
+const port = process.env.PORT || 5000; // Знаходитися сервер буде за адресою, яка вказана у значенні PORT, або локалхост:5000
 
 app.use(bodyParser.json()); // всі запити які будуть приходити на сервер, ми будемо конвертувати в json
 app.use(bodyParser.urlencoded({ extended: true })); // всі урл строки конвертуються в зрозумілі серверу
